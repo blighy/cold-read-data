@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#18213b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Cold Read</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: dark;
+  --sky:#18213b;
+  --sky-2:#212c4c;
+  --sky-3:#2b3860;
+  --line:#3a4776;
+  --parch:#efe6d2;
+  --dim:#a9afc6;
+  --brass:#cfa55a;
+  --brass-ink:#241a08;
+  --hit:#8fc4a3;
+  --hit-bg:#20392f;
+  --miss:#e09a92;
+  --miss-bg:#3f2528;
+  --serif:'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*,*::before,*::after{box-sizing:inherit;margin:0;padding:0;}
+html{min-height:100%;background:var(--sky);}
+body{
+  min-height:100%;
+  background:
+    radial-gradient(1px 1px at 12% 18%, rgba(239,230,210,.35) 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 9%, rgba(239,230,210,.25) 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 72%, rgba(239,230,210,.2) 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 88%, rgba(239,230,210,.25) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 48%, rgba(207,165,90,.35) 50%, transparent 51%),
+    var(--sky);
+  background-attachment:fixed;
+  color:var(--parch);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding:0 16px;
+  display:flex;justify-content:center;
+}
+.app{width:100%;max-width:440px;padding:18px 0 36px;}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+button:focus-visible,a:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:6px;}
+.hide{display:none !important;}
+.btn{
+  display:block;width:100%;padding:15px 18px;border-radius:14px;
+  background:var(--brass);color:var(--brass-ink);font-weight:600;font-size:16px;
+  transition:transform .08s ease;
+}
+.btn:active{transform:scale(.985);}
+.btn.ghost{background:transparent;color:var(--parch);border:1px solid var(--line);}
+.link{color:var(--dim);font-size:14px;text-decoration:underline;text-underline-offset:3px;}
+
+/* ---------- start ---------- */
+#start{text-align:center;padding-top:9vh;}
+.wordmark{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(58px,20vw,86px);line-height:.95;letter-spacing:-.02em;}
+.wordmark .star{display:block;font-style:normal;font-size:22px;color:var(--brass);margin-bottom:14px;letter-spacing:0;}
+.pitch{color:var(--dim);max-width:30ch;margin:18px auto 36px;font-size:17px;}
+.rules{text-align:left;margin:30px 0 0;border-top:1px solid var(--line);padding-top:20px;color:var(--dim);font-size:15px;}
+.rules p+p{margin-top:10px;}
+.rules b{color:var(--parch);font-weight:600;}
+.rules .pts{font-family:var(--serif);color:var(--parch);}
+.start-foot{margin-top:28px;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--dim);}
+.loading{color:var(--dim);font-size:15px;margin-top:10px;}
+
+/* ---------- play ---------- */
+.bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.dots{display:flex;gap:6px;}
+.dots i{width:9px;height:9px;border-radius:50%;border:1px solid var(--line);display:block;}
+.dots i.done{background:var(--sky-3);border-color:var(--sky-3);}
+.dots i.now{background:var(--brass);border-color:var(--brass);}
+.tally{font-size:14px;color:var(--dim);}
+.tally b{font-family:var(--serif);font-weight:600;font-size:19px;color:var(--parch);}
+
+/* the arch: the one memorable thing */
+.arch{
+  position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
+  border-radius:220px 220px 18px 18px;
+  background:var(--sky-2);
+  box-shadow:0 0 0 1px var(--line), 0 0 0 6px var(--sky), 0 0 0 7px rgba(207,165,90,.45);
+}
+.arch img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;display:block;}
+.arch .tap{position:absolute;top:0;bottom:0;width:40%;z-index:2;}
+.arch .tap.l{left:0;} .arch .tap.r{right:0;}
+.pager{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:3;pointer-events:none;}
+.pager i{width:6px;height:6px;border-radius:50%;background:rgba(239,230,210,.4);}
+.pager i.on{background:var(--parch);}
+.nophoto{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:15px;padding:30px;text-align:center;}
+.credit{font-size:12px;color:var(--dim);margin-top:12px;min-height:18px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.who{text-align:center;margin-top:14px;min-height:30px;}
+.who .nm{font-family:var(--serif);font-size:24px;font-weight:600;}
+.who .q{color:var(--dim);font-size:15px;}
+
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 12px;}
+.slot{
+  border:1px solid var(--line);border-radius:12px;background:var(--sky-2);
+  padding:10px 4px 9px;text-align:center;min-height:74px;
+}
+.slot.on{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass);}
+.slot .k{font-size:13px;color:var(--dim);}
+.slot .v{font-family:var(--serif);font-size:17px;font-weight:600;margin-top:2px;line-height:1.25;}
+.slot .v.empty{color:var(--line);font-weight:400;}
+.slot .t{font-size:12px;margin-top:2px;font-weight:600;}
+.slot.hit{background:var(--hit-bg);border-color:var(--hit);}
+.slot.hit .t{color:var(--hit);}
+.slot.miss{background:var(--miss-bg);border-color:var(--miss);}
+.slot.miss .t{color:var(--miss);}
+.slot.skip .t{color:var(--dim);}
+
+.hint{font-size:14px;color:var(--dim);margin-bottom:9px;display:flex;justify-content:space-between;align-items:baseline;}
+.signs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.sg{
+  border:1px solid var(--line);border-radius:11px;background:var(--sky-2);
+  padding:8px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:1px;
+}
+.sg:active{background:var(--sky-3);}
+.sg .g{font-size:20px;line-height:1.1;color:var(--brass);}
+.sg .s{font-size:11.5px;color:var(--dim);}
+.sg.picked{background:var(--sky-3);border-color:var(--brass);}
+.sg.picked .s{color:var(--parch);}
+.actions{margin-top:16px;}
+.pts-pop{text-align:center;font-family:var(--serif);font-size:20px;margin-top:4px;}
+
+/* ---------- round end ---------- */
+#roundEnd{padding-top:6vh;}
+.thread-lead{color:var(--dim);font-size:16px;text-align:center;}
+.thread{font-family:var(--serif);font-size:clamp(34px,10vw,44px);line-height:1.1;text-align:center;margin:6px 0 4px;}
+.thread .gl{color:var(--brass);}
+.round-pts{text-align:center;color:var(--dim);margin-bottom:24px;}
+.round-pts b{font-family:var(--serif);font-size:22px;color:var(--parch);font-weight:600;}
+.recap{list-style:none;border-top:1px solid var(--line);margin-bottom:26px;}
+.recap li{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);}
+.recap img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 25%;background:var(--sky-2);}
+.recap .rn{font-weight:600;}
+.recap .rc{font-size:13px;color:var(--dim);}
+.recap .rc .th{color:var(--brass);}
+.recap .rp{font-family:var(--serif);font-size:18px;}
+.stack{display:flex;flex-direction:column;gap:10px;}
+
+
+/* mode switch */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--sky-2);border:1px solid var(--line);border-radius:14px;padding:5px;margin:0 0 14px;}
+.modes button{padding:10px 6px;border-radius:10px;font-size:14.5px;color:var(--dim);line-height:1.25;}
+.modes button small{display:block;font-size:12px;opacity:.85;}
+.modes button.sel{background:var(--sky-3);color:var(--parch);box-shadow:inset 0 0 0 1px var(--brass);}
+
+/* free mode people strip */
+.people{display:flex;justify-content:space-between;gap:6px;margin-bottom:14px;}
+.person{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:2px 0;}
+.person .ph{width:100%;max-width:56px;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--sky-2);box-shadow:0 0 0 1px var(--line);}
+.person .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;display:block;}
+.person.on .ph{box-shadow:0 0 0 2px var(--brass);}
+.person .pips{display:flex;gap:3px;}
+.person .pips i{width:6px;height:6px;border-radius:50%;border:1px solid var(--line);display:block;}
+.person .pips i.f{background:var(--brass);border-color:var(--brass);}
+
+/* recap chips */
+.chips{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13.5px;margin-top:2px;}
+.chips span{color:var(--dim);}
+.chips .hit{color:var(--hit);}
+.chips .miss{color:var(--miss);}
+.chips .th{text-decoration:underline;text-decoration-color:var(--brass);text-decoration-thickness:2px;text-underline-offset:3px;}
+.said{font-size:12.5px;color:var(--miss);margin-top:2px;}
+
+/* ---------- about ---------- */
+dialog{
+  margin:auto;max-width:420px;width:calc(100% - 32px);
+  background:var(--sky-2);color:var(--parch);border:1px solid var(--line);border-radius:16px;
+  padding:22px;
+}
+dialog::backdrop{background:rgba(8,12,24,.7);}
+dialog h2{font-family:var(--serif);font-weight:600;font-size:22px;margin-bottom:12px;}
+dialog p{font-size:14.5px;color:var(--dim);margin-bottom:10px;}
+dialog p b{color:var(--parch);font-weight:600;}
+dialog .btn{margin-top:8px;}
+
+@media (prefers-reduced-motion: no-preference){
+  .arch img{animation:fade .25s ease;}
+  @keyframes fade{from{opacity:.2}to{opacity:1}}
+  .reveal-in{animation:rise .35s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- START -->
+  <section id="start">
+    <h1 class="wordmark"><span class="star">✦</span>Cold Read</h1>
+    <p class="pitch">Read a face, call the chart. Every round, five people secretly share one placement.</p>
+    <div class="modes" id="modes" role="radiogroup" aria-label="Game mode">
+      <button data-m="seq" role="radio">One at a time<small>Lock in each person</small></button>
+      <button data-m="free" role="radio">All five at once<small>Compare, then submit</small></button>
+    </div>
+    <button class="btn" id="playBtn" disabled>Loading charts…</button>
+    <div class="rules">
+      <p><b>Guess what you can see.</b> Sun, moon, rising, or any mix. Leave the rest blank.</p>
+      <p><span class="pts">+10</span> for a hit, <span class="pts">−2</span> for a miss, <span class="pts">0</span> for blank.</p>
+      <p><b>Find the thread.</b> All five people in a round share one sun, moon, or rising sign. Spot it early and the back half gets easier.</p>
+      <p>Tap the sides of a photo to see more. In all-five mode, tap the faces up top to switch people anytime.</p>
+    </div>
+    <div class="start-foot">
+      <span id="bestLine"></span>
+      <button class="link" id="aboutBtn1">About and credits</button>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" class="hide">
+    <div class="bar">
+      <div class="dots" id="dots"></div>
+      <div class="tally">Round <b id="roundPts">0</b> &nbsp; Total <b id="totalPts">0</b></div>
+    </div>
+
+    <div class="people hide" id="people"></div>
+
+    <div class="arch" id="arch">
+      <img id="photo" alt="">
+      <div class="nophoto hide" id="nophoto">No photos loaded for this one. Go with your gut.</div>
+      <button class="tap l" id="prevPh" aria-label="Previous photo"></button>
+      <button class="tap r" id="nextPh" aria-label="Next photo"></button>
+      <div class="pager" id="pager"></div>
+    </div>
+    <div class="credit" id="credit"></div>
+
+    <div class="who" id="who"><div class="q">Who is this? You'll find out after you lock in.</div></div>
+
+    <div class="slots" id="slots"></div>
+
+    <div id="picker">
+      <div class="hint"><span id="hintTxt">Pick a sign</span><button class="link" id="clearBtn">Clear</button></div>
+      <div class="signs" id="signs"></div>
+    </div>
+
+    <div class="pts-pop hide" id="ptsPop"></div>
+
+    <div class="actions">
+      <button class="btn" id="lockBtn">Lock in</button>
+      <button class="btn hide" id="nextBtn">Next</button>
+    </div>
+  </section>
+
+  <!-- ROUND END -->
+  <section id="roundEnd" class="hide">
+    <p class="thread-lead">The thread was</p>
+    <h2 class="thread" id="threadTxt"></h2>
+    <p class="round-pts">This round <b id="rePts"></b> &nbsp; Total <b id="reTotal"></b></p>
+    <ul class="recap" id="recap"></ul>
+    <div class="stack">
+      <button class="btn" id="againBtn">Next round</button>
+      <button class="btn ghost" id="quitBtn">End session</button>
+    </div>
+  </section>
+
+</div>
+
+<dialog id="about">
+  <h2>About Cold Read</h2>
+  <p>A practice game for reading birth charts from faces. Charts use accurately timed births (Rodden rating AA or A) via <b>Astrotheme</b>.</p>
+  <p>Photos come from <b>Wikimedia Commons</b> under their listed licenses, and from <b>TMDB</b>. Each photo's credit appears under it.</p>
+  <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  <p>A free, non-commercial hobby project.</p>
+  <button class="btn ghost" id="aboutClose">Close</button>
+</dialog>
+
+<script>
+(function(){
+const SIGNS=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+const GLYPH={Aries:"♈",Taurus:"♉",Gemini:"♊",Cancer:"♋",Leo:"♌",Virgo:"♍",Libra:"♎",Scorpio:"♏",Sagittarius:"♐",Capricorn:"♑",Aquarius:"♒",Pisces:"♓"};
+const SHORT={Sagittarius:"Sag",Capricorn:"Cap",Aquarius:"Aqua"};
+const FEATS=["sun","moon","rising"];
+const FLABEL={sun:"Sun",moon:"Moon",rising:"Rising"};
+const ROUND_SIZE=5, HIT=10, MISS=-2;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.random()*a.length|0];
+const sh=s=>SHORT[s]||s;
+
+let DATA=[], BY={sun:{},moon:{},rising:{}};
+let seen=new Set(), total=0;
+let mode="seq";
+let R=null;   // current round: {feat,sign,cards,i,pts}
+
+/* ---------- storage ---------- */
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+function getBest(){const v=parseInt(ls("cr_best_"+mode)||"",10);return isNaN(v)?null:v;}
+function setBest(v){const b=getBest();if(b===null||v>b)ls("cr_best_"+mode,String(v));}
+function showBest(){const b=getBest();$("bestLine").textContent=b===null?"":"Best session in this mode: "+b;}
+
+/* ---------- mode switch ---------- */
+mode=ls("cr_mode")==="free"?"free":"seq";
+function paintModes(){document.querySelectorAll("#modes button").forEach(b=>{const on=b.dataset.m===mode;b.classList.toggle("sel",on);b.setAttribute("aria-checked",on);});showBest();}
+document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;ls("cr_mode",mode);paintModes();});
+paintModes();
+
+/* ---------- load ---------- */
+fetch("game.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+  DATA=d.filter(c=>c.sun&&c.moon&&c.rising);
+  DATA.forEach(c=>FEATS.forEach(f=>{(BY[f][c[f]]=BY[f][c[f]]||[]).push(c);}));
+  $("playBtn").disabled=false;$("playBtn").textContent="Start a round";
+}).catch(()=>{$("playBtn").textContent="Couldn't load the celebrity list";});
+
+function show(id){["start","play","roundEnd"].forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0);}
+
+/* ---------- round building: exactly one shared placement ---------- */
+function buildRound(){
+  for(let t=0;t<400;t++){
+    const feat=pick(FEATS);
+    const signs=Object.keys(BY[feat]).filter(s=>BY[feat][s].length>=ROUND_SIZE);
+    const sign=pick(signs);
+    const pool=BY[feat][sign];
+    const five=shuffle(pool.filter(c=>!seen.has(c.id))).concat(shuffle(pool.filter(c=>seen.has(c.id)))).slice(0,ROUND_SIZE);
+    if(five.length<ROUND_SIZE)continue;
+    if(FEATS.filter(f=>f!==feat).every(f=>new Set(five.map(c=>c[f])).size>1)){
+      return {feat,sign,i:0,pts:0,cards:shuffle(five).map(c=>({c,photos:c.p.slice(),ph:0,guess:{sun:null,moon:null,rising:null},active:"sun",locked:false,pts:0}))};
+    }
+  }
+  return null;
+}
+function startRound(){
+  R=buildRound();
+  if(!R){alert("Couldn't build a round. Try again.");return;}
+  R.cards.forEach(k=>seen.add(k.c.id));
+  if(seen.size>DATA.length-ROUND_SIZE*2) seen=new Set(R.cards.map(k=>k.c.id));
+  show("play");renderCard();
+}
+const card=()=>R.cards[R.i];
+
+function scoreCard(k){let p=0;FEATS.forEach(f=>{const g=k.guess[f];if(g)p+=g===k.c[f]?HIT:MISS;});k.pts=p;k.locked=true;return p;}
+
+/* ---------- rendering ---------- */
+function renderCard(){
+  const k=card();
+  const free=mode==="free";
+  $("dots").classList.toggle("hide",free);
+  $("people").classList.toggle("hide",!free);
+  if(free) renderPeople();
+  else $("dots").innerHTML=R.cards.map((_,j)=>'<i class="'+(j<R.i?"done":j===R.i?"now":"")+'"></i>').join("");
+  $("roundPts").textContent=R.pts;$("totalPts").textContent=total;
+  $("who").innerHTML=free
+    ? '<div class="q">Person '+(R.i+1)+' of 5. Names show when you submit.</div>'
+    : '<div class="q">Who is this? You\'ll find out after you lock in.</div>';
+  $("picker").classList.remove("hide");
+  $("ptsPop").classList.add("hide");
+  $("lockBtn").classList.remove("hide");$("nextBtn").classList.add("hide");
+  $("lockBtn").textContent=free?"Submit round":"Lock in";
+  showPhoto();renderSlots();renderSigns();
+  if(!free){const nx=R.cards[R.i+1];if(nx&&nx.photos[0]){const im=new Image();im.src=nx.photos[0].u;}}
+}
+function renderPeople(){
+  $("people").innerHTML=R.cards.map((k,j)=>{
+    const src=k.photos[0]?k.photos[0].u:"";
+    return '<button class="person'+(j===R.i?" on":"")+'" data-j="'+j+'" aria-label="Person '+(j+1)+'"><span class="ph">'+(src?'<img src="'+esc(src)+'" alt="" onerror="this.style.visibility=\'hidden\'">':'')+'</span>'+
+      '<span class="pips">'+FEATS.map(f=>'<i class="'+(k.guess[f]?"f":"")+'"></i>').join("")+'</span></button>';
+  }).join("");
+  document.querySelectorAll("#people .person").forEach(b=>b.onclick=()=>{R.i=+b.dataset.j;renderCard();});
+}
+function refreshPips(){
+  if(mode!=="free")return;
+  const k=card();const el=document.querySelector('#people .person[data-j="'+R.i+'"] .pips');
+  if(el)el.innerHTML=FEATS.map(f=>'<i class="'+(k.guess[f]?"f":"")+'"></i>').join("");
+}
+
+function showPhoto(){
+  const k=card();const n=k.photos.length;const img=$("photo");
+  if(!n){img.classList.add("hide");$("nophoto").classList.remove("hide");$("pager").innerHTML="";$("credit").textContent="";return;}
+  img.classList.remove("hide");$("nophoto").classList.add("hide");
+  const p=k.photos[k.ph];
+  img.onerror=()=>{k.photos.splice(k.ph,1);if(k.ph>=k.photos.length)k.ph=0;showPhoto();if(mode==="free"&&k.ph===0)renderPeople();};
+  img.src=p.u;
+  $("pager").innerHTML=n>1?k.photos.map((_,j)=>'<i class="'+(j===k.ph?"on":"")+'"></i>').join(""):"";
+  $("credit").textContent=creditLine(p);
+  if(n>1){const im=new Image();im.src=k.photos[(k.ph+1)%n].u;}
+}
+function creditLine(p){
+  if(p.s==="tmdb")return "Photo via TMDB";
+  const bits=[];if(p.a)bits.push(p.a);if(p.l)bits.push(p.l);
+  return "Photo"+(bits.length?": "+bits.join(", "):"")+" via Wikimedia Commons";
+}
+function step(d){const k=card();if(!k||k.photos.length<2)return;k.ph=(k.ph+d+k.photos.length)%k.photos.length;showPhoto();}
+$("prevPh").onclick=()=>step(-1);$("nextPh").onclick=()=>step(1);
+let tx=null;
+$("arch").addEventListener("touchstart",e=>{tx=e.changedTouches[0].clientX;},{passive:true});
+$("arch").addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>40)step(dx<0?1:-1);},{passive:true});
+document.addEventListener("keydown",e=>{if($("play").classList.contains("hide"))return;if(e.key==="ArrowLeft")step(-1);if(e.key==="ArrowRight")step(1);});
+
+/* ---------- guessing ---------- */
+function renderSlots(){
+  const k=card();
+  $("slots").innerHTML=FEATS.map(f=>{
+    const g=k.guess[f];
+    if(!k.locked){
+      return '<button class="slot'+(k.active===f?" on":"")+'" data-f="'+f+'"><div class="k">'+FLABEL[f]+'</div>'+
+        '<div class="v'+(g?"":" empty")+'">'+(g?GLYPH[g]+" "+sh(g):"blank")+'</div></button>';
+    }
+    const t=k.c[f];
+    if(!g) return '<div class="slot skip"><div class="k">'+FLABEL[f]+'</div><div class="v">'+GLYPH[t]+" "+sh(t)+'</div><div class="t">skipped, 0</div></div>';
+    const ok=g===t;
+    return '<div class="slot '+(ok?"hit":"miss")+' reveal-in"><div class="k">'+FLABEL[f]+'</div><div class="v">'+GLYPH[t]+" "+sh(t)+'</div><div class="t">'+(ok?"+"+HIT:"you said "+sh(g)+", "+MISS)+'</div></div>';
+  }).join("");
+  if(!k.locked) document.querySelectorAll("#slots .slot").forEach(b=>b.onclick=()=>{k.active=b.dataset.f;renderSlots();renderSigns();});
+}
+function renderSigns(){
+  const k=card();
+  $("hintTxt").textContent="Pick a sign for "+FLABEL[k.active].toLowerCase();
+  const cur=k.guess[k.active];
+  $("signs").innerHTML=SIGNS.map(s=>'<button class="sg'+(cur===s?" picked":"")+'" data-s="'+s+'"><span class="g">'+GLYPH[s]+'</span><span class="s">'+sh(s)+'</span></button>').join("");
+  document.querySelectorAll("#signs .sg").forEach(b=>b.onclick=()=>{
+    const s=b.dataset.s;
+    k.guess[k.active]=(k.guess[k.active]===s)?null:s;
+    if(k.guess[k.active]){const nxt=FEATS.find(f=>!k.guess[f]&&FEATS.indexOf(f)>FEATS.indexOf(k.active));if(nxt)k.active=nxt;}
+    renderSlots();renderSigns();refreshPips();
+  });
+}
+$("clearBtn").onclick=()=>{const k=card();k.guess[k.active]=null;renderSlots();renderSigns();refreshPips();};
+
+$("lockBtn").onclick=()=>{
+  if(mode==="free"){
+    R.cards.forEach(k=>{const p=scoreCard(k);R.pts+=p;total+=p;});
+    endRound();return;
+  }
+  const k=card();const p=scoreCard(k);
+  R.pts+=p;total+=p;
+  $("roundPts").textContent=R.pts;$("totalPts").textContent=total;
+  $("who").innerHTML='<div class="nm reveal-in">'+esc(k.c.n)+'</div>';
+  $("picker").classList.add("hide");
+  const pop=$("ptsPop");pop.textContent=(p>0?"+":"")+p+" points";pop.classList.remove("hide");
+  renderSlots();
+  $("lockBtn").classList.add("hide");$("nextBtn").classList.remove("hide");
+  $("nextBtn").textContent=R.i<R.cards.length-1?"Next person":"See the thread";
+};
+$("nextBtn").onclick=()=>{R.i++;if(R.i<R.cards.length){renderCard();window.scrollTo(0,0);}else endRound();};
+
+/* ---------- round end ---------- */
+function endRound(){
+  $("threadTxt").innerHTML='<span class="gl">'+GLYPH[R.sign]+'</span> '+R.sign+' '+FLABEL[R.feat].toLowerCase();
+  $("rePts").textContent=(R.pts>0?"+":"")+R.pts;$("reTotal").textContent=total;
+  $("recap").innerHTML=R.cards.map(k=>{
+    const c=k.c;const img=c.p[0]?c.p[0].u:"";
+    const chips=FEATS.map(f=>{
+      const g=k.guess[f];const cls=[!g?"":(g===c[f]?"hit":"miss"),f===R.feat?"th":""].join(" ").trim();
+      return '<span class="'+cls+'">'+GLYPH[c[f]]+" "+sh(c[f])+'</span>';
+    }).join("");
+    const misses=FEATS.filter(f=>k.guess[f]&&k.guess[f]!==c[f]).map(f=>FLABEL[f]+" "+sh(k.guess[f]));
+    return '<li><img src="'+esc(img)+'" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'"><div><div class="rn">'+esc(c.n)+'</div><div class="chips">'+chips+'</div>'+
+      (misses.length?'<div class="said">You said '+misses.join(", ")+'</div>':'')+'</div><div class="rp">'+(k.pts>0?"+":"")+k.pts+'</div></li>';
+  }).join("");
+  setBest(total);
+  show("roundEnd");
+}
+$("playBtn").onclick=()=>{total=0;startRound();};
+$("againBtn").onclick=startRound;
+$("quitBtn").onclick=()=>{setBest(total);showBest();show("start");};
+
+/* ---------- about ---------- */
+const dlg=$("about");
+$("aboutBtn1").onclick=()=>dlg.showModal();
+$("aboutClose").onclick=()=>dlg.close();
+})();
+</script>
+</body>
+</html>
