@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0d">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Cold Read</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%23e02a3c'>✦</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='black'/><text x='50' y='64' font-family='Courier New,monospace' font-size='44' font-weight='bold' fill='white' text-anchor='middle'>CR</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme: dark;
-  --bg:#0b0b0d; --panel:#16161a; --panel-2:#1f1f25; --line:#34343c;
+  --bg:#000000; --panel:#141416; --panel-2:#1e1e22; --line:#35353d;
   --text:#ffffff; --dim:#a4a4ae;
   --red:#e02a3c; --red-deep:#5a1019; --red-soft:#ff6b78;
   --hit:#7ccf9c; --hit-bg:#13261c; --miss:#ff6b78; --miss-bg:#2b1116;
-  --serif:'Fraunces', Georgia, 'Times New Roman', serif;
+  --type:'Courier Prime', 'Courier New', Courier, monospace;
   --sans:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   box-sizing:border-box;
   padding-top: env(safe-area-inset-top, 0px);
@@ -28,14 +28,7 @@
 html{min-height:100%;background:var(--bg);}
 body{
   min-height:100%;
-  background:
-    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.28) 50%, transparent 51%),
-    radial-gradient(1px 1px at 78% 9%, rgba(255,255,255,.2) 50%, transparent 51%),
-    radial-gradient(1px 1px at 64% 72%, rgba(255,255,255,.16) 50%, transparent 51%),
-    radial-gradient(1px 1px at 30% 88%, rgba(255,255,255,.2) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 90% 48%, rgba(224,42,60,.5) 50%, transparent 51%),
-    var(--bg);
-  background-attachment:fixed;
+  background:var(--bg);
   color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.5;
   -webkit-font-smoothing:antialiased;
   padding:0 16px; display:flex; justify-content:center;
@@ -53,8 +46,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline
 
 /* ---------- start ---------- */
 #start{text-align:center;padding-top:6vh;}
-.wordmark{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(58px,20vw,86px);line-height:.95;letter-spacing:-.02em;}
-.wordmark .star{display:block;font-style:normal;font-size:22px;color:var(--red);margin-bottom:14px;letter-spacing:0;}
+.wordmark{font-family:var(--type);font-weight:700;font-size:clamp(46px,15vw,64px);line-height:1;letter-spacing:-.03em;}
 .pitch{color:var(--dim);max-width:30ch;margin:16px auto 26px;font-size:17px;}
 .modes{display:flex;flex-direction:column;gap:7px;margin:0 0 12px;text-align:left;}
 .modes button{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel);}
@@ -71,11 +63,12 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline
 .rules{text-align:left;margin:24px 0 0;border-top:1px solid var(--line);padding-top:18px;color:var(--dim);font-size:15px;}
 .rules p+p{margin-top:9px;}
 .rules b{color:var(--text);font-weight:600;}
-.rules .pts{font-family:var(--serif);color:var(--text);}
+.rules .pts{font-family:var(--type);font-weight:700;color:var(--text);}
 .start-foot{margin-top:26px;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--dim);gap:12px;}
 
 /* ---------- play ---------- */
-.bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;min-height:28px;}
+.bar{display:flex;align-items:center;gap:14px;margin-bottom:10px;min-height:28px;}
+.bar .tally{margin-left:auto;}
 .dots{display:flex;gap:6px;}
 .dots i{width:9px;height:9px;border-radius:50%;border:1px solid var(--line);display:block;}
 .dots i.done{background:var(--panel-2);border-color:var(--dim);}
@@ -84,20 +77,21 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline
 .strikes i{font-style:normal;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;}
 .strikes i.x{background:var(--red);border-color:var(--red);color:#fff;}
 .unl{font-size:14px;color:var(--dim);}
-.unl b{color:var(--text);font-family:var(--serif);font-size:17px;}
-.tally{font-size:14px;color:var(--dim);}
-.tally b{font-family:var(--serif);font-weight:600;font-size:19px;color:var(--text);}
+.unl b{color:var(--text);font-family:var(--type);font-weight:700;font-size:17px;}
+.tally{font-size:14px;color:var(--dim);white-space:nowrap;}
+.tally b{font-family:var(--type);font-weight:700;font-size:18px;color:var(--text);}
 
 .wrongs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
 .wchip{font-size:13px;border:1px solid var(--red-deep);background:var(--miss-bg);color:var(--text);border-radius:20px;padding:3px 10px;}
 .wchip .x{color:var(--red-soft);font-weight:600;margin-right:2px;}
 .wchip small{color:var(--dim);font-size:12px;}
 
-.head{text-align:center;margin-bottom:12px;min-height:44px;display:flex;flex-direction:column;justify-content:flex-end;}
-.head .nm{font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.15;}
-.head .sub{color:var(--dim);font-size:14px;}
+.head{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;text-align:center;margin-bottom:12px;min-height:38px;}
+.head .nm{font-family:var(--type);font-size:23px;font-weight:700;line-height:1.15;min-width:0;}
+.biobtn{flex:none;font-size:13.5px;border:1px solid var(--line);border-radius:20px;padding:4px 14px;color:var(--text);background:var(--panel);}
+.biobtn.on{background:var(--red);border-color:var(--red);color:#fff;}
 
-/* the arch card, with a back side */
+/* the arched photo card, with a back side for the bio */
 .stage{position:relative;width:100%;aspect-ratio:4/5;perspective:1400px;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
 .flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.3,.7,.2,1);}
 .flip.flipped{transform:rotateY(180deg);}
@@ -109,21 +103,18 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline
   box-shadow:0 0 0 1px rgba(255,255,255,.18);
 }
 .stage::before{content:"";position:absolute;inset:-7px;border-radius:227px 227px 24px 24px;border:1.5px solid var(--red);pointer-events:none;}
-.back{transform:rotateY(180deg);padding:72px 24px 22px;overflow:auto;background:linear-gradient(180deg,var(--panel-2),var(--panel));}
-.back .bn{font-family:var(--serif);font-size:24px;font-weight:600;text-align:center;line-height:1.2;}
-.back .bs{text-align:center;color:var(--red-soft);font-size:13px;margin:4px 0 14px;}
-.back p{font-size:15px;line-height:1.6;color:#e6e6ea;}
-.back .flipback{display:block;text-align:center;color:var(--dim);font-size:13px;margin-top:16px;}
+.back{transform:rotateY(180deg);padding:76px 24px 24px;overflow:auto;background:linear-gradient(180deg,var(--panel-2),var(--panel));}
+.back .bn{font-family:var(--type);font-size:22px;font-weight:700;text-align:center;line-height:1.2;margin-bottom:14px;}
+.back p{font-size:15px;line-height:1.65;color:#e6e6ea;}
 .track{display:flex;height:100%;will-change:transform;}
 .slide{flex:0 0 100%;height:100%;}
 .slide img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;display:block;pointer-events:none;-webkit-user-drag:none;}
 .pager{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none;}
 .pager i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);}
 .pager i.on{background:#fff;}
-.biotag{position:absolute;right:14px;bottom:30px;font-size:12px;color:#fff;background:rgba(11,11,13,.62);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:3px 10px;pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 .nophoto{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:15px;padding:30px;text-align:center;}
-.photo-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;min-height:24px;}
-.credit{font-size:12px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.photo-row{display:flex;align-items:center;gap:8px;margin-top:14px;min-height:24px;}
+.credit{flex:1;font-size:12px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
 .hidebtn{flex:none;font-size:12.5px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:3px 10px;}
 
 .people{display:flex;justify-content:space-between;gap:6px;margin:14px 0 4px;}
@@ -140,7 +131,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline
 .hint{font-size:14px;color:var(--dim);margin:14px 0 9px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px;}
 .tab{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:7px 4px;font-size:13.5px;color:var(--dim);line-height:1.25;}
-.tab .tv{display:block;font-family:var(--serif);font-size:15.5px;font-weight:600;color:var(--text);}
+.tab .tv{display:block;font-family:var(--type);font-size:15px;font-weight:700;color:var(--text);}
 .tab .tv.empty{color:var(--line);font-weight:400;font-family:var(--sans);font-size:13px;}
 .tab.on{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red);color:var(--text);}
 .signs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
@@ -162,30 +153,31 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline
 .results{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
 .res{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14.5px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);}
 .res .lbl{color:var(--dim);font-size:13px;min-width:48px;}
-.res .val{flex:1;font-family:var(--serif);font-weight:600;}
+.res .val{flex:1;font-family:var(--type);font-weight:700;}
 .res .out{font-size:13px;font-weight:600;}
 .res.hit{border-color:var(--hit);background:var(--hit-bg);} .res.hit .out{color:var(--hit);}
 .res.miss{border-color:var(--miss);background:var(--miss-bg);} .res.miss .out{color:var(--miss);}
 .res.skip .out{color:var(--dim);}
 .actions{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
 .skiprow{text-align:center;}
-.pts-pop{text-align:center;font-family:var(--serif);font-size:20px;margin-top:10px;}
+.pts-pop{text-align:center;font-family:var(--type);font-weight:700;font-size:20px;margin-top:10px;}
 
 /* ---------- round end ---------- */
 #roundEnd{padding-top:5vh;}
 .thread-lead{color:var(--dim);font-size:16px;text-align:center;}
-.thread{font-family:var(--serif);font-size:clamp(34px,10vw,44px);line-height:1.1;text-align:center;margin:6px 0 4px;}
+.thread{font-family:var(--type);font-weight:700;font-size:clamp(28px,8.5vw,38px);line-height:1.15;text-align:center;margin:6px 0 4px;}
 .thread .gl{color:var(--red);}
 .round-pts{text-align:center;color:var(--dim);margin-bottom:22px;}
-.round-pts b{font-family:var(--serif);font-size:22px;color:var(--text);font-weight:600;}
+.round-pts b{font-family:var(--type);font-size:20px;color:var(--text);font-weight:700;}
 .recap{list-style:none;border-top:1px solid var(--line);margin-bottom:24px;}
 .recap li{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line);}
 .recap img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 25%;background:var(--panel);}
 .recap .rn{font-weight:600;}
-.recap .rp{font-family:var(--serif);font-size:18px;padding-top:2px;}
+.recap .rp{font-family:var(--type);font-weight:700;font-size:17px;padding-top:2px;}
 .trio{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:2px 16px;margin-top:4px;}
-.trio div{font-size:14px;line-height:1.3;}
-.trio small{display:block;font-size:11.5px;color:var(--dim);}
+.trio div{font-size:13px;line-height:1.3;}
+.trio small{display:block;font-size:11.5px;color:var(--dim);font-family:var(--sans);}
+.trio span{font-family:var(--type);font-weight:700;}
 .trio .hit{color:var(--hit);} .trio .miss{color:var(--miss);}
 .trio .th span{text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:2px;text-underline-offset:3px;}
 .said{font-size:12.5px;color:var(--miss);margin-top:3px;}
@@ -197,8 +189,8 @@ details.bio p{font-size:13.5px;color:#d9d9de;margin-top:5px;line-height:1.55;}
 
 /* ---------- dialogs, toast ---------- */
 dialog{margin:auto;max-width:420px;width:calc(100% - 32px);max-height:calc(100% - 40px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:16px;padding:22px;}
-dialog::backdrop{background:rgba(0,0,0,.72);}
-dialog h2{font-family:var(--serif);font-weight:600;font-size:22px;margin-bottom:14px;}
+dialog::backdrop{background:rgba(0,0,0,.75);}
+dialog h2{font-family:var(--type);font-weight:700;font-size:21px;margin-bottom:14px;}
 dialog h3{font-size:15px;font-weight:600;margin:18px 0 8px;}
 dialog p{font-size:14.5px;color:var(--dim);margin-bottom:8px;}
 dialog p b{color:var(--text);font-weight:600;}
@@ -208,10 +200,10 @@ dialog p b{color:var(--text);font-weight:600;}
 .row input[type=checkbox]{width:22px;height:22px;accent-color:var(--red);flex:none;}
 .mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
 .mini .btn{width:auto;padding:9px 14px;font-size:14px;}
-#copyBox{width:100%;min-height:90px;margin-top:8px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px;}
-#reasonDlg .stack .btn{text-align:left;}
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;gap:14px;align-items:center;font-size:14px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.5);white-space:nowrap;}
-.toast button{color:var(--red-soft);font-weight:600;}
+.copybox{width:100%;min-height:90px;margin-top:8px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px;}
+dialog .stack .btn{text-align:left;}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);max-width:calc(100% - 32px);background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;gap:14px;align-items:center;font-size:14px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.6);}
+.toast button{color:var(--red-soft);font-weight:600;flex:none;}
 
 @media (prefers-reduced-motion: reduce){
   .flip{transition:none;}
@@ -227,7 +219,7 @@ dialog p b{color:var(--text);font-weight:600;}
 
   <!-- START -->
   <section id="start">
-    <h1 class="wordmark"><span class="star">✦</span>Cold Read</h1>
+    <h1 class="wordmark">Cold Read</h1>
     <p class="pitch">Read a face, call the chart. Every round, five people secretly share one placement.</p>
     <div class="modes" id="modes" role="radiogroup" aria-label="Game mode">
       <button data-m="thread" role="radio"><span><span class="t">Common Thread</span><span class="d">Find what all five share</span></span><span class="r"></span></button>
@@ -246,7 +238,11 @@ dialog p b{color:var(--text);font-weight:600;}
 
   <!-- PLAY -->
   <section id="play" class="hide">
-    <div class="bar"><div id="barLeft"></div><div class="tally" id="tally"></div></div>
+    <div class="bar">
+      <button class="link" id="menuBtn">Menu</button>
+      <div id="barLeft"></div>
+      <div class="tally" id="tally"></div>
+    </div>
     <div class="wrongs hide" id="wrongs"></div>
     <div class="head" id="head"></div>
 
@@ -256,7 +252,6 @@ dialog p b{color:var(--text);font-weight:600;}
           <div class="track" id="track"></div>
           <div class="nophoto hide" id="nophoto">No photos for this one. Go with your gut.</div>
           <div class="pager" id="pager"></div>
-          <div class="biotag hide" id="biotag">Tap for bio</div>
         </div>
         <div class="face back" id="back"></div>
       </div>
@@ -264,6 +259,7 @@ dialog p b{color:var(--text);font-weight:600;}
     <div class="photo-row">
       <div class="credit" id="credit"></div>
       <button class="hidebtn" id="hideBtn">Hide photo</button>
+      <button class="hidebtn" id="removeBtn">Remove person</button>
     </div>
 
     <div class="people hide" id="people"></div>
@@ -299,7 +295,7 @@ dialog p b{color:var(--text);font-weight:600;}
     <ul class="recap" id="recap"></ul>
     <div class="stack">
       <button class="btn" id="againBtn">Next round</button>
-      <button class="btn ghost" id="quitBtn">End session</button>
+      <button class="btn ghost" id="quitBtn">Main menu</button>
     </div>
   </section>
 </div>
@@ -307,7 +303,7 @@ dialog p b{color:var(--text);font-weight:600;}
 <dialog id="settings">
   <h2>Settings</h2>
   <div class="row"><label for="optNames">Show names while guessing</label><input type="checkbox" id="optNames"></div>
-  <div class="row"><label for="optBio">Tap photo to read bio<span class="sm">Off: bios only show after the reveal</span></label><input type="checkbox" id="optBio"></div>
+  <div class="row"><label for="optBio">Show bio button<span class="sm">Off: bios only show after the reveal</span></label><input type="checkbox" id="optBio"></div>
   <div class="row"><label>Thread guesses</label><span class="pill" id="optRule"><button data-v="s3">3 strikes</button><button data-v="s5">5 strikes</button><button data-v="unl">Unlimited</button></span></div>
   <p id="ruleNote" style="font-size:13px"></p>
 
@@ -317,7 +313,15 @@ dialog p b{color:var(--text);font-weight:600;}
     <button class="btn ghost" id="copyHid">Copy list</button>
     <button class="btn ghost" id="clearHid">Unhide all</button>
   </div>
-  <textarea id="copyBox" class="hide" readonly></textarea>
+  <textarea id="copyBox" class="copybox hide" readonly></textarea>
+
+  <h3>Removed people</h3>
+  <p id="remCount"></p>
+  <div class="mini">
+    <button class="btn ghost" id="copyRem">Copy list</button>
+    <button class="btn ghost" id="clearRem">Restore all</button>
+  </div>
+  <textarea id="copyBox2" class="copybox hide" readonly></textarea>
 
   <h3>Credits</h3>
   <p>Charts use accurately timed births (Rodden rating AA or A) via <b>Astrotheme</b>. Short bios come from Wikipedia via Astrotheme.</p>
@@ -338,6 +342,26 @@ dialog p b{color:var(--text);font-weight:600;}
   </div>
 </dialog>
 
+<dialog id="removeDlg">
+  <h2>Remove this person?</h2>
+  <p>They won't show up in rounds on this device. Pick why, so the list shows what to clean out.</p>
+  <div class="stack">
+    <button class="btn ghost" data-r="random">Random person</button>
+    <button class="btn ghost" data-r="photos">Bad photos</button>
+    <button class="btn ghost" data-r="unfit">Shouldn't be in the game</button>
+    <button class="btn" data-r="">Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="leaveDlg">
+  <h2>Leave this round?</h2>
+  <p>Your points so far count toward your best score.</p>
+  <div class="stack">
+    <button class="btn" id="leaveYes">Main menu</button>
+    <button class="btn ghost" id="leaveNo">Keep playing</button>
+  </div>
+</dialog>
+
 <div class="toast hide" id="toast"><span id="toastTxt"></span><button id="toastBtn">Undo</button></div>
 
 <script>
@@ -351,12 +375,14 @@ const FL={rising:"Rising",sun:"Sun",moon:"Moon"};
 const ROUND_SIZE=5, HIT=10, MISS=-2, UNL_START=10;
 const MODES=["thread","known","free","seq"];
 const REASONS={bad:"Bad photo",duplicate:"Duplicate",wrong:"Wrong person"};
+const REM_REASONS={random:"Random person",photos:"Bad photos",unfit:"Shouldn't be in the game"};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
 const pick=a=>a[Math.random()*a.length|0];
 const stars=(n,max)=>"★".repeat(n)+"☆".repeat(Math.max(0,max-n));
 const plural=(n,w)=>n+" "+w+(n===1?"":"s");
+const missWord=n=>n===1?"1 miss":n+" misses";
 
 /* ---------- storage ---------- */
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
@@ -370,11 +396,14 @@ const opt={
 const isT=m=>(m||mode)==="thread"||(m||mode)==="known";
 const isMulti=()=>mode!=="seq";
 
-/* hidden photos: { fileId: reason } (migrates the old plain list) */
 let hidden={};
 try{hidden=JSON.parse(ls("cr_hidden2")||"{}")||{};}catch(e){hidden={};}
 try{const old=JSON.parse(ls("cr_hidden")||"[]");if(Array.isArray(old)&&old.length){old.forEach(f=>{if(!hidden[f])hidden[f]="bad";});ls("cr_hidden2",JSON.stringify(hidden));ls("cr_hidden","[]");}}catch(e){}
 const saveHidden=()=>ls("cr_hidden2",JSON.stringify(hidden));
+
+let removed={};
+try{removed=JSON.parse(ls("cr_removed")||"{}")||{};}catch(e){removed={};}
+const saveRemoved=()=>ls("cr_removed",JSON.stringify(removed));
 
 const bestKey=()=>"cr_best_"+mode+(isT()?"_"+opt.rule:"")+(mode==="known"?"_"+knownFeat:"");
 const unitWord=()=>isT()?(opt.rule==="unl"?"points":"stars"):"points";
@@ -389,8 +418,8 @@ function ruleText(){
     :"<p><b>"+(opt.rule==="s3"?3:5)+" strikes.</b> Unused strikes become stars. Change this in Settings.</p>";
 }
 const RULES={
-  thread:()=>'<p><b>All five people share one placement.</b> Rising, sun, or moon. Figure out which placement and which sign.</p><p>A wrong guess reveals everyone who has that sign. If even one person has it, that whole placement is ruled out.</p>'+ruleText(),
-  known:()=>'<p><b>You pick the placement,</b> the game builds a round where all five share that placement. You just name the sign.</p>'+ruleText(),
+  thread:()=>'<p><b>All five people share one placement.</b> Rising, sun, or moon. Figure out which placement and which sign.</p><p>A wrong guess reveals everyone who has that sign in that placement. If even one person has it, that whole placement is ruled out.</p>'+ruleText(),
+  known:()=>'<p><b>You pick the placement,</b> the game builds a round where all five share it. You just name the sign.</p><p>A wrong sign costs a strike, but every face with that sign, in any placement, gets revealed.</p>'+ruleText(),
   free:()=>'<p><b>Guess any placement for any of the five,</b> in any order. Leave the rest blank.</p><p><span class="pts">+10</span> for a hit, <span class="pts">−2</span> for a miss, <span class="pts">0</span> for blank.</p><p>They all share one placement. Spot it and you can call it for everyone.</p>',
   seq:()=>'<p><b>One person at a time.</b> Guess rising, sun, moon, or any mix, then lock in.</p><p><span class="pts">+10</span> for a hit, <span class="pts">−2</span> for a miss, <span class="pts">0</span> for blank.</p><p>All five share one placement. Spot it early and the back half gets easier.</p>'
 };
@@ -399,7 +428,7 @@ function paintModes(){
   $("knownPick").classList.toggle("hide",mode!=="known");
   $("knownPill").innerHTML=FEATS.map(f=>'<button data-f="'+f+'" class="'+(f===knownFeat?"sel":"")+'">'+FL[f]+'</button>').join("");
   document.querySelectorAll("#knownPill button").forEach(b=>b.onclick=()=>{knownFeat=b.dataset.f;ls("cr_known",knownFeat);paintModes();});
-  $("rules").innerHTML=RULES[mode]()+'<p>Swipe the photo for more pictures'+(opt.bio?', tap it to read their bio':'')+'.</p>';
+  $("rules").innerHTML=RULES[mode]()+'<p>Tap or swipe the photo for more pictures'+(opt.bio?'. Use the Bio button to read about them':'')+'.</p>';
   showBest();
 }
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;ls("cr_mode",mode);paintModes();});
@@ -416,14 +445,19 @@ fetch("game.json").then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}
 function show(id){["start","play","roundEnd"].forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0);}
 
 /* ---------- rounds: exactly one shared placement ---------- */
-let seen=new Set(),total=0,R=null,flipped=false;
+let seen=new Set(),total=0,rounds=0,R=null,flipped=false;
+const avail=(f,s)=>(BY[f][s]||[]).filter(c=>!removed[c.id]);
+function makeCard(c){
+  return {c,photos:c.p.filter(p=>!hidden[p.f]),ph:0,
+    guess:{rising:null,sun:null,moon:null},rev:{rising:false,sun:false,moon:false},active:"rising",locked:false,pts:0};
+}
 function buildRound(){
   for(let t=0;t<500;t++){
     const feat=mode==="known"?knownFeat:pick(FEATS);
-    const signs=Object.keys(BY[feat]).filter(s=>BY[feat][s].length>=ROUND_SIZE);
+    const signs=Object.keys(BY[feat]).filter(s=>avail(feat,s).length>=ROUND_SIZE);
     if(!signs.length)return null;
     const sign=pick(signs);
-    const pool=BY[feat][sign];
+    const pool=avail(feat,sign);
     const five=shuffle(pool.filter(c=>!seen.has(c.id))).concat(shuffle(pool.filter(c=>seen.has(c.id)))).slice(0,ROUND_SIZE);
     if(five.length<ROUND_SIZE)continue;
     if(!FEATS.filter(f=>f!==feat).every(f=>new Set(five.map(c=>c[f])).size>1))continue;
@@ -431,14 +465,14 @@ function buildRound(){
     return {feat,sign,i:0,pts:0,rule,max:rule==="s5"?5:rule==="s3"?3:Infinity,
       strikes:0,elim:{rising:false,sun:false,moon:false},guessed:new Set(),wrong:[],
       sel:{feat:mode==="known"?feat:null,sign:null},done:false,solved:false,
-      cards:shuffle(five).map(c=>({c,photos:c.p.filter(p=>!hidden[p.f]),ph:0,
-        guess:{rising:null,sun:null,moon:null},rev:{rising:false,sun:false,moon:false},active:"rising",locked:false,pts:0}))};
+      cards:shuffle(five).map(makeCard)};
   }
   return null;
 }
 function startRound(){
-  R=buildRound();
-  if(!R){alert("Couldn't build a round. Try again.");return;}
+  const r=buildRound();
+  if(!r){alert("Couldn't build a round. Try again.");return;}
+  R=r;
   R.cards.forEach(k=>seen.add(k.c.id));
   if(seen.size>DATA.length-ROUND_SIZE*2)seen=new Set(R.cards.map(k=>k.c.id));
   flipped=false;
@@ -450,7 +484,7 @@ const worth=()=>Math.max(1,UNL_START-R.strikes);
 /* ---------- render ---------- */
 function renderCard(){
   setFlip(false,true);
-  renderBar();renderWrongs();renderHead();buildTrack();renderBack();
+  renderBar();renderWrongs();renderHead();buildTrack();
   $("people").classList.toggle("hide",!isMulti());
   if(isMulti())renderPeople();
   renderControls();
@@ -460,7 +494,7 @@ function renderBar(){
   if(mode==="seq") $("barLeft").innerHTML='<div class="dots">'+R.cards.map((_,j)=>'<i class="'+(j<R.i?"done":j===R.i?"now":"")+'"></i>').join("")+'</div>';
   else if(isT()){
     $("barLeft").innerHTML=R.rule==="unl"
-      ?'<span class="unl">'+(R.done?plural(R.strikes,"miss").replace("misss","misses"):'Worth <b>'+worth()+'</b>')+'</span>'
+      ?'<span class="unl">'+(R.done?missWord(R.strikes):'Worth <b>'+worth()+'</b>')+'</span>'
       :'<div class="strikes">'+Array.from({length:R.max},(_,j)=>'<i class="'+(j<R.strikes?"x":"")+'">'+(j<R.strikes?"✕":"")+'</i>').join("")+'</div>';
   }else $("barLeft").innerHTML="";
   $("tally").innerHTML=isT()
@@ -468,15 +502,29 @@ function renderBar(){
     :'Round <b>'+R.pts+'</b> &nbsp; Total <b>'+total+'</b>';
 }
 function renderWrongs(){
-  const show=isT()&&R.wrong.length>0;
-  $("wrongs").classList.toggle("hide",!show);
-  if(!show)return;
-  $("wrongs").innerHTML=R.wrong.map(w=>'<span class="wchip"><span class="x">✕</span> '+GLYPH[w.sign]+' '+w.sign+(mode==="thread"?' '+FL[w.feat].toLowerCase()+' <small>'+(w.n?w.n+" had it":"nobody")+'</small>':'')+'</span>').join("");
+  const on=isT()&&R.wrong.length>0;
+  $("wrongs").classList.toggle("hide",!on);
+  if(!on)return;
+  $("wrongs").innerHTML=R.wrong.map(w=>{
+    let tail="";
+    if(mode==="thread")tail=' '+FL[w.feat].toLowerCase()+' <small>'+(w.n?w.n+" had it":"nobody")+'</small>';
+    else if(w.found)tail=' <small>'+w.found+' found</small>';
+    return '<span class="wchip"><span class="x">✕</span> '+GLYPH[w.sign]+' '+w.sign+tail+'</span>';
+  }).join("");
 }
+function nameOk(){return opt.names||(mode==="seq"&&card().locked);}
+function bioOk(){return !!card().c.b&&(opt.bio||(mode==="seq"&&card().locked));}
 function renderHead(){
-  const k=card();
-  const showName=opt.names||(mode==="seq"&&k.locked);
-  $("head").innerHTML=(showName?'<div class="nm">'+esc(k.c.n)+'</div>':'')+'<div class="sub">Person '+(R.i+1)+' of 5</div>';
+  const k=card(),parts=[];
+  if(nameOk())parts.push('<div class="nm">'+esc(k.c.n)+'</div>');
+  if(bioOk())parts.push('<button class="biobtn'+(flipped?" on":"")+'" id="bioBtn" aria-pressed="'+flipped+'">'+(flipped?"Photo":"Bio")+'</button>');
+  $("head").innerHTML=parts.join("");
+  renderBack();
+}
+$("head").addEventListener("click",e=>{if(e.target.closest("#bioBtn")){setFlip(!flipped);renderHead();}});
+function renderBack(){
+  const c=card().c;
+  $("back").innerHTML=(nameOk()?'<div class="bn">'+esc(c.n)+'</div>':'')+'<p>'+esc(c.b||"No bio for this one.")+'</p>';
 }
 function renderPeople(){
   const th=isT();
@@ -490,7 +538,7 @@ function renderPeople(){
   document.querySelectorAll("#people .person").forEach(b=>b.onclick=()=>{if(R.i===+b.dataset.j)return;R.i=+b.dataset.j;flipped=false;renderCard();});
 }
 
-/* ---------- photo track (camera-roll swiping) ---------- */
+/* ---------- photo track: swipe or tap ---------- */
 const track=$("track"),stage=$("stage"),flipEl=$("flip");
 function buildTrack(){
   const k=card(),n=k.photos.length;
@@ -512,7 +560,6 @@ function afterPhoto(){
   $("pager").innerHTML=n>1?k.photos.map((_,j)=>'<i class="'+(j===k.ph?"on":"")+'"></i>').join(""):"";
   const p=k.photos[k.ph];
   $("credit").textContent=!p?"":p.s==="tmdb"?"Photo via TMDB":"Photo"+((p.a||p.l)?": "+[p.a,p.l].filter(Boolean).join(", "):"")+" via Wikimedia Commons";
-  $("biotag").classList.toggle("hide",!(bioAllowed()&&card().c.b&&n>0));
 }
 function dropPhoto(k,p){
   const i=k.photos.indexOf(p);if(i<0)return;
@@ -529,6 +576,11 @@ function step(d){
   k.ph=to;position(true);afterPhoto();
 }
 function bump(d){position(true,-d*28);setTimeout(()=>position(true),170);}
+function tapPhoto(e){
+  if(flipped)return;
+  const r=stage.getBoundingClientRect();
+  step((e.clientX-r.left)<r.width/2?-1:1);
+}
 
 let drag=null;
 stage.addEventListener("pointerdown",e=>{if(e.button>0)return;drag={x:e.clientX,y:e.clientY,t:Date.now(),dx:0,moving:false,id:e.pointerId};});
@@ -557,7 +609,7 @@ function endDrag(e,cancel){
     if(to>=0&&to<k.photos.length)k.ph=to;
     position(true);afterPhoto();
   }else if(!cancel&&e&&Math.abs(e.clientX-drag.x)<8&&Math.abs(e.clientY-drag.y)<8){
-    tapFlip();
+    tapPhoto(e);
   }
   drag=null;
 }
@@ -570,32 +622,24 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ---------- flip to bio ---------- */
-function bioAllowed(){return opt.bio||(mode==="seq"&&card().locked);}
-function renderBack(){
-  const c=card().c;
-  $("back").innerHTML='<div class="bn">'+esc(c.n)+'</div><div class="bs">Rising, sun, and moon stay hidden</div>'+
-    (c.b?'<p>'+esc(c.b)+'</p>':'<p>No bio for this one.</p>')+'<span class="flipback">Tap to flip back</span>';
-}
 function setFlip(on,instant){
   flipped=on;
   if(instant){flipEl.style.transition="none";flipEl.classList.toggle("flipped",on);void flipEl.offsetWidth;flipEl.style.transition="";}
   else flipEl.classList.toggle("flipped",on);
 }
-function tapFlip(){
-  if(!flipped&&!bioAllowed())return;
-  setFlip(!flipped);
+
+/* ---------- toast ---------- */
+let toastTimer=null;
+function toast(msg,undo){
+  $("toastTxt").textContent=msg;$("toast").classList.remove("hide");
+  $("toastBtn").onclick=()=>{undo();$("toast").classList.add("hide");};
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.add("hide"),5000);
 }
 
 /* ---------- hide a photo, with a reason ---------- */
 const reasonDlg=$("reasonDlg");
 $("hideBtn").onclick=()=>{if(card().photos.length)reasonDlg.showModal();};
 reasonDlg.querySelectorAll("button").forEach(b=>b.onclick=()=>{reasonDlg.close();if(b.dataset.r)hidePhoto(b.dataset.r);});
-let toastTimer=null;
-function toast(msg,undo){
-  $("toastTxt").textContent=msg;$("toast").classList.remove("hide");
-  $("toastBtn").onclick=()=>{undo();$("toast").classList.add("hide");};
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.add("hide"),4500);
-}
 function hidePhoto(reason){
   const k=card(),idx=k.ph,p=k.photos[idx];if(!p)return;
   hidden[p.f]=reason;saveHidden();
@@ -607,6 +651,56 @@ function hidePhoto(reason){
     k.photos.splice(idx,0,p);k.ph=idx;
     if(k===card())buildTrack();
     if(isMulti())renderPeople();
+  });
+}
+
+/* ---------- remove a person ---------- */
+const removeDlg=$("removeDlg");
+$("removeBtn").onclick=()=>removeDlg.showModal();
+removeDlg.querySelectorAll("button").forEach(b=>b.onclick=()=>{removeDlg.close();if(b.dataset.r)removePerson(b.dataset.r);});
+
+/* keep a swapped-in person consistent with what you already guessed */
+function applyWrongs(k){
+  R.wrong.forEach(w=>{
+    if(mode==="known")FEATS.forEach(f=>{if(k.c[f]===w.sign)k.rev[f]=true;});
+    else if(mode==="thread"){if(k.c[w.feat]===w.sign)k.rev[w.feat]=true;}
+  });
+  if(R.solved)k.rev[R.feat]=true;
+}
+/* replacement shares the thread and keeps every other placement varied */
+function pickReplacement(idx){
+  const others=R.cards.filter((_,j)=>j!==idx).map(k=>k.c);
+  const inRound=new Set(R.cards.map(k=>k.c.id));
+  const cands=avail(R.feat,R.sign).filter(c=>!inRound.has(c.id));
+  const order=shuffle(cands.filter(c=>!seen.has(c.id))).concat(shuffle(cands.filter(c=>seen.has(c.id))));
+  const rest=FEATS.filter(f=>f!==R.feat);
+  return order.find(c=>rest.every(f=>new Set(others.map(o=>o[f]).concat(c[f])).size>1))||null;
+}
+function removePerson(reason){
+  const round=R,idx=R.i,old=R.cards[idx],c=old.c;
+  removed[c.id]={r:reason,n:c.n,pv:c.pv||0,b:(c.b||"").slice(0,160)};
+  saveRemoved();
+  const label=opt.names?"Removed "+c.n:"Person removed";
+  const canSwap=!R.done&&!(mode==="seq"&&old.locked);
+  let swapped=null;
+  if(canSwap){
+    swapped=pickReplacement(idx);
+    if(!swapped){
+      toast(label+". New round started.",()=>{delete removed[c.id];saveRemoved();});
+      startRound();return;
+    }
+    const nk=makeCard(swapped);
+    applyWrongs(nk);seen.add(swapped.id);
+    R.cards[idx]=nk;
+    flipped=false;
+    renderCard();
+  }
+  toast(label,()=>{
+    delete removed[c.id];saveRemoved();
+    if(swapped&&R===round&&R.cards[idx]&&R.cards[idx].c.id===swapped.id){
+      applyWrongs(old);R.cards[idx]=old;
+      if(R.i===idx){flipped=false;renderCard();}else renderPeople();
+    }
   });
 }
 
@@ -688,8 +782,6 @@ function renderThreadUI(){
 function guessThread(){
   const {feat,sign}=R.sel;if(!feat||!sign||R.done)return;
   R.guessed.add(feat+":"+sign);
-  const hits=R.cards.filter(k=>k.c[feat]===sign);
-  hits.forEach(k=>k.rev[feat]=true);
   const m=$("tMsg");m.classList.remove("win");
   const fl=FL[feat].toLowerCase();
   if(feat===R.feat&&sign===R.sign){
@@ -701,14 +793,24 @@ function guessThread(){
     m.textContent="Solved. All five have "+sign+" "+fl+". "+(R.rule==="unl"?"+"+got+" points":stars(got,R.max));
   }else{
     R.strikes++;
-    R.wrong.push({feat,sign,n:hits.length});
     if(mode==="known"){
-      m.innerHTML="Not "+sign+".";
-    }else if(hits.length){
-      R.elim[feat]=true;
-      m.innerHTML="<b>"+hits.length+" of 5</b> have "+sign+" "+fl+", so the thread isn't "+fl+".";
+      // reveal this sign wherever it shows up, in any of the three placements
+      let found=0;
+      R.cards.forEach(k=>FEATS.forEach(f=>{if(k.c[f]===sign){k.rev[f]=true;found++;}}));
+      R.wrong.push({feat,sign,found});
+      m.innerHTML=found
+        ?"Not "+sign+". <b>"+found+"</b> "+sign+" placement"+(found===1?"":"s")+" showed up under the faces."
+        :"Not "+sign+". Nobody has it in any placement.";
     }else{
-      m.innerHTML="Nobody has "+sign+" "+fl+".";
+      const hits=R.cards.filter(k=>k.c[feat]===sign);
+      hits.forEach(k=>k.rev[feat]=true);
+      R.wrong.push({feat,sign,n:hits.length});
+      if(hits.length){
+        R.elim[feat]=true;
+        m.innerHTML="<b>"+hits.length+" of 5</b> have "+sign+" "+fl+", so the thread isn't "+fl+".";
+      }else{
+        m.innerHTML="Nobody has "+sign+" "+fl+".";
+      }
     }
     if(R.rule!=="unl"&&R.strikes>=R.max){R.done=true;m.innerHTML+=" Out of strikes.";}
   }
@@ -723,7 +825,7 @@ $("lockBtn").onclick=()=>{
   if(mode==="free"){R.cards.forEach(k=>{const p=scoreCard(k);R.pts+=p;total+=p;});endRound();return;}
   const k=card(),p=scoreCard(k);
   R.pts+=p;total+=p;
-  renderBar();renderHead();afterPhoto();renderControls();
+  renderBar();renderHead();renderControls();
   const pop=$("ptsPop");pop.textContent=(p>0?"+":"")+p+" points";pop.classList.remove("hide");
   $("lockBtn").classList.add("hide");$("nextBtn").classList.remove("hide");
   $("nextBtn").textContent=R.i<R.cards.length-1?"Next person":"See the thread";
@@ -735,14 +837,23 @@ $("nextBtn").onclick=()=>{
 };
 $("skipBtn").onclick=()=>{startRound();};
 
+/* ---------- menu ---------- */
+const leaveDlg=$("leaveDlg");
+function leave(){if(rounds>0||total!==0)setBest(total);paintModes();show("start");}
+$("menuBtn").onclick=()=>leaveDlg.showModal();
+$("leaveNo").onclick=()=>leaveDlg.close();
+$("leaveYes").onclick=()=>{leaveDlg.close();leave();};
+$("quitBtn").onclick=leave;
+
 /* ---------- round end ---------- */
 function endRound(){
+  rounds++;
   $("threadTxt").innerHTML='<span class="gl">'+GLYPH[R.sign]+'</span> '+R.sign+' '+FL[R.feat].toLowerCase();
   if(isT()){
-    const unl=R.rule==="unl",tw=unl?"Points":"Stars";
+    const unl=R.rule==="unl",tw=unl?"points":"stars";
     $("roundLine").innerHTML=R.solved
-      ?"Solved with "+plural(R.strikes,"miss").replace("misss","misses")+" &nbsp; <b>"+(unl?"+"+R.pts:stars(R.pts,R.max))+"</b><br>Total "+tw.toLowerCase()+" <b>"+total+"</b>"
-      :"Out of strikes &nbsp; Total "+tw.toLowerCase()+" <b>"+total+"</b>";
+      ?"Solved with "+missWord(R.strikes)+" &nbsp; <b>"+(unl?"+"+R.pts:stars(R.pts,R.max))+"</b><br>Total "+tw+" <b>"+total+"</b>"
+      :"Out of strikes &nbsp; Total "+tw+" <b>"+total+"</b>";
   }else{
     $("roundLine").innerHTML="This round <b>"+(R.pts>0?"+":"")+R.pts+"</b> &nbsp; Total <b>"+total+"</b>";
   }
@@ -763,9 +874,8 @@ function endRound(){
   setBest(total);
   show("roundEnd");
 }
-$("playBtn").onclick=()=>{total=0;startRound();};
+$("playBtn").onclick=()=>{total=0;rounds=0;startRound();};
 $("againBtn").onclick=startRound;
-$("quitBtn").onclick=()=>{setBest(total);paintModes();show("start");};
 
 /* ---------- settings ---------- */
 const dlg=$("settings");
@@ -780,19 +890,32 @@ function paintSettings(){
     ?plural(n,"photo")+" hidden on this device ("+Object.keys(REASONS).filter(r=>counts[r]).map(r=>counts[r]+" "+REASONS[r].toLowerCase()).join(", ")+"). Copy the list and send it over to remove them for good."
     :"No hidden photos yet. Tap Hide photo under any picture.";
   $("copyHid").disabled=!n;$("clearHid").disabled=!n;
+  const rc={};Object.values(removed).forEach(x=>rc[x.r]=(rc[x.r]||0)+1);
+  const rn=Object.keys(removed).length;
+  $("remCount").textContent=rn
+    ?plural(rn,"person").replace("persons","people")+" removed on this device ("+Object.keys(REM_REASONS).filter(r=>rc[r]).map(r=>rc[r]+" "+REM_REASONS[r].toLowerCase()).join(", ")+"). Copy the list and send it over to clear them out for good."
+    :"No one removed yet. Tap Remove person under any picture.";
+  $("copyRem").disabled=!rn;$("clearRem").disabled=!rn;
 }
-$("setBtn").onclick=()=>{paintSettings();$("copyBox").classList.add("hide");dlg.showModal();};
+$("setBtn").onclick=()=>{paintSettings();$("copyBox").classList.add("hide");$("copyBox2").classList.add("hide");dlg.showModal();};
 $("setClose").onclick=()=>{dlg.close();paintModes();};
 $("optNames").onchange=e=>{opt.names=e.target.checked;ls("cr_names",opt.names?"1":"0");};
 $("optBio").onchange=e=>{opt.bio=e.target.checked;ls("cr_bio",opt.bio?"1":"0");};
 document.querySelectorAll("#optRule button").forEach(b=>b.onclick=()=>{opt.rule=b.dataset.v;ls("cr_rule",opt.rule);paintSettings();});
+function copyOut(btn,boxId,txt){
+  const box=$(boxId);box.value=txt;box.classList.remove("hide");box.select();
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent="Copied";setTimeout(()=>btn.textContent=o,1500);}).catch(()=>{});
+}
 $("copyHid").onclick=()=>{
   const out={};Object.keys(REASONS).forEach(r=>{out[r]=Object.keys(hidden).filter(f=>hidden[f]===r);});
-  const txt=JSON.stringify(out,null,1);
-  const box=$("copyBox");box.value=txt;box.classList.remove("hide");box.select();
-  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{$("copyHid").textContent="Copied";setTimeout(()=>$("copyHid").textContent="Copy list",1500);}).catch(()=>{});
+  copyOut($("copyHid"),"copyBox",JSON.stringify(out,null,1));
 };
 $("clearHid").onclick=()=>{if(confirm("Unhide all photos on this device?")){hidden={};saveHidden();paintSettings();$("copyBox").classList.add("hide");}};
+$("copyRem").onclick=()=>{
+  const out=Object.keys(removed).map(id=>({id,name:removed[id].n,reason:removed[id].r,pageviews:removed[id].pv,bio:removed[id].b}));
+  copyOut($("copyRem"),"copyBox2",JSON.stringify(out,null,1));
+};
+$("clearRem").onclick=()=>{if(confirm("Restore everyone you removed on this device?")){removed={};saveRemoved();paintSettings();$("copyBox2").classList.add("hide");}};
 })();
 </script>
 </body>
